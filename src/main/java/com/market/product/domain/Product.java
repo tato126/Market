@@ -20,10 +20,10 @@ public class Product {
     private ProductId id;
 
     // 판매자
-    private String username;
+    private String seller;
 
     // 상품명
-    private String name;
+    private String productName;
 
     // 상품 설명
     private String description;
@@ -35,22 +35,57 @@ public class Product {
     private Integer stockQuantity;
 
     // 상품 상태 (품절, 판매, 할인)
-    private ProductState state;
+    private ProductState state = ProductState.PREPARING;
 
     // 카테고리 (상의, 하의, 신발)
-    private ProductCategory category;
-
-    // 상품 이미지
-    private ProductPicture ProductPicture;
+    // 초기 생성 시에는 외부에서 받아와야 한다
+    // 현재는 임의로 설정.
+    private ProductCategory category = ProductCategory.SHOES;
 
     // 상품 생성/수정 시간
     private LocalDateTime createdDate;
-    private LocalDateTime updateDate;
+    private LocalDateTime lastModifiedDate;
+
+    private Product(ProductId id, String seller, String productName, String description, BigDecimal price, Integer stockQuantity, ProductState state, ProductCategory category, LocalDateTime createdDate) {
+        this.id = Objects.requireNonNull(id, "ProductId must not be null");
+        this.seller = Objects.requireNonNull(seller, "Seller must not be null");
+        this.productName = Objects.requireNonNull(productName, "ProductName must not be null");
+        this.description = Objects.requireNonNull(description, "Product Description must not be null");
+        this.price = Objects.requireNonNull(price, "Product price must not be null");
+        this.stockQuantity = Objects.requireNonNull(stockQuantity, "Product stock quantity must not be null");
+        this.state = Objects.requireNonNull(state, "Product state must not be null");
+        this.category = Objects.requireNonNull(category, "Product category must not be null");
+        this.createdDate = Objects.requireNonNull(createdDate, "Product createDate must not be null");
+        this.lastModifiedDate = this.createdDate;
+    }
+
+    public static Product create(
+            ProductIdGenerator idGenerator,
+            String seller,
+            String productName,
+            String description,
+            BigDecimal price,
+            Integer stockQuantity,
+            ProductState state,
+            ProductCategory productCategory) {
+
+        return new Product(
+                idGenerator.generateId(),
+                seller,
+                productName,
+                description,
+                price,
+                stockQuantity,
+                state,
+                productCategory,
+                LocalDateTime.now()
+        );
+    }
 
     // TODO: 차후 ProductUsernameNotMatchedException 과 같은 형식으로 변경해야 한다.
-    private Product verifyUsername(String username) {
+    private Product verifySeller(String sellerName) {
 
-        if (!Objects.equals(username, this.username)) {
+        if (!Objects.equals(sellerName, this.seller)) {
             throw new IllegalStateException(); // 차후 변경되어야 할 예외처리
         }
 
@@ -67,12 +102,12 @@ public class Product {
         return id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getSeller() {
+        return seller;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
     public String getDescription() {
@@ -95,16 +130,12 @@ public class Product {
         return category;
     }
 
-    public ProductPicture getProductPicture() {
-        return ProductPicture;
-    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
     @Override
@@ -130,16 +161,15 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
+                ", seller='" + seller + '\'' +
+                ", productName='" + productName + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", stockQuantity=" + stockQuantity +
                 ", state=" + state +
                 ", category=" + category +
-                ", ProductPicture=" + ProductPicture +
                 ", createdDate=" + createdDate +
-                ", updateDate=" + updateDate +
+                ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
 }
