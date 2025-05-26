@@ -4,7 +4,8 @@ import com.market.core.product.domain.Product;
 import com.market.core.product.domain.ProductId;
 import com.market.core.product.domain.ProductIdGenerator;
 import com.market.core.product.domain.ProductRepository;
-import com.market.web.dto.ProductRequestDto;
+import com.market.web.dto.request.ProductRequestDto;
+import com.market.web.dto.request.ProductUpdateDto;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ public class DefaultProductManager implements ProductRegistry, ProductFind, Prod
 
     @Override
     public ProductId register(ProductRequestDto productSaveRequestDto) throws RuntimeException {
+
         Product product = Product.create(
                 productIdGenerator,
                 productSaveRequestDto.getSellerName(),
@@ -59,9 +61,21 @@ public class DefaultProductManager implements ProductRegistry, ProductFind, Prod
         productRepository.delete(byId(productId));
     }
 
-    // 현재는 다루지 않음
     @Override
-    public void modify(ProductId productId) throws RuntimeException {
-//        productRepository.findById(byId(productId).update());
+    public ProductId modify(ProductId productId, ProductUpdateDto updateDto) throws RuntimeException {
+
+        // TODO: 예외 처리를 EntityNotFoundException 형식으로 변경해야 한다.
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다. id=" + productId));
+
+        product.update(
+                updateDto.productName(),
+                updateDto.description(),
+                updateDto.price(),
+                updateDto.stockQuantity(),
+                updateDto.productState(),
+                updateDto.productCategory());
+
+        return productId;
     }
 }

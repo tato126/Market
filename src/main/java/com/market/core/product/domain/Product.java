@@ -82,8 +82,41 @@ public class Product {
         );
     }
 
+    public void update(
+            String productName,
+            String description,
+            BigDecimal price,
+            Integer stockQuantity,
+            ProductState productState,
+            ProductCategory productCategory) {
+
+        if (productName != null) {
+            this.productName = productName;
+        }
+
+        if (description != null) {
+            this.description = description;
+        }
+
+        if (price != null) {
+            this.price = price;
+        }
+
+        if (stockQuantity != null) {
+            this.stockQuantity = stockQuantity;
+        }
+
+        if (state != null) {
+            this.state = productState;
+        }
+
+        if (category != null) {
+            this.category = productCategory;
+        }
+    }
+
     // TODO: 차후 ProductUsernameNotMatchedException 과 같은 형식으로 변경해야 한다.
-    private Product verifysellerName(String sellerNameName) {
+    private Product verifySellerName(String sellerNameName) {
 
         if (!Objects.equals(sellerNameName, this.sellerName)) {
             throw new IllegalStateException(); // 차후 변경되어야 할 예외처리

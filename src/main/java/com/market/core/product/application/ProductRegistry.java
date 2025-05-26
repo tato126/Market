@@ -1,7 +1,7 @@
 package com.market.core.product.application;
 
 import com.market.core.product.domain.ProductId;
-import com.market.web.dto.ProductRequestDto;
+import com.market.web.dto.request.ProductRequestDto;
 
 /**
  * 상품 등록 유스케이스.

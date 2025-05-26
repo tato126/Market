@@ -54,8 +54,6 @@ public class ProductId implements Serializable {
 
     @Override
     public String toString() {
-        return "ProductId{" +
-                "value='" + value + '\'' +
-                '}';
+        return value;
     }
 }
