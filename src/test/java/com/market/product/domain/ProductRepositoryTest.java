@@ -1,6 +1,7 @@
 package com.market.product.domain;
 
-import com.market.product.domain.support.UUIDProductIdGenerator;
+import com.market.core.product.domain.*;
+import com.market.core.product.domain.support.UUIDProductIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class ProductRepositoryTest {
 
     @DisplayName("새로운 상품을 저장하면, 저장된 상품 객체가 반환되어야 한다.")
     @Test
-    public void saveProductTest() {
+    public void saveProductRepositoryTest() {
 
         // given
 //        String seller = "신발 판매자";
