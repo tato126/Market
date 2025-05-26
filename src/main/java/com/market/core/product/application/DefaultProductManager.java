@@ -1,10 +1,13 @@
-package com.market.product.application;
+package com.market.core.product.application;
 
-import com.market.product.domain.*;
+import com.market.core.product.domain.Product;
+import com.market.core.product.domain.ProductId;
+import com.market.core.product.domain.ProductIdGenerator;
+import com.market.core.product.domain.ProductRepository;
+import com.market.web.dto.ProductRequestDto;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -25,8 +28,19 @@ public class DefaultProductManager implements ProductRegistry, ProductFind, Prod
     }
 
     @Override
-    public ProductId register(String sellerName, String productName, String description, BigDecimal price, Integer stockQuantity, ProductState state, ProductCategory productCategory) throws RuntimeException {
-        return productRepository.save(Product.create(productIdGenerator, sellerName, productName, description, price, stockQuantity, state, productCategory)).getId();
+    public ProductId register(ProductRequestDto productSaveRequestDto) throws RuntimeException {
+        Product product = Product.create(
+                productIdGenerator,
+                productSaveRequestDto.getSellerName(),
+                productSaveRequestDto.getProductName(),
+                productSaveRequestDto.getDescription(),
+                productSaveRequestDto.getPrice(),
+                productSaveRequestDto.getStockQuantity(),
+                productSaveRequestDto.getProductState(),
+                productSaveRequestDto.getProductCategory()
+        );
+
+        return productRepository.save(product).getId();
     }
 
     @Override

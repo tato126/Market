@@ -1,4 +1,4 @@
-package com.market.product.domain;
+package com.market.core.product.domain;
 
 /**
  * 상품 카테고리 열거 클래스.

@@ -1,7 +1,7 @@
-package com.market.product.domain.support;
+package com.market.core.product.domain.support;
 
-import com.market.product.domain.ProductId;
-import com.market.product.domain.ProductIdGenerator;
+import com.market.core.product.domain.ProductId;
+import com.market.core.product.domain.ProductIdGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

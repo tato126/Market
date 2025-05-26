@@ -1,7 +1,7 @@
-package com.market.product.application;
+package com.market.core.product.application;
 
-import com.market.product.domain.Product;
-import com.market.product.domain.ProductId;
+import com.market.core.product.domain.Product;
+import com.market.core.product.domain.ProductId;
 
 import java.util.List;
 

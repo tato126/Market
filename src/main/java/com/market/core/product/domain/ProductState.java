@@ -1,4 +1,4 @@
-package com.market.product.domain;
+package com.market.core.product.domain;
 
 /**
  * 제품 상태 열거 클래스.

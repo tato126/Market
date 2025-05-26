@@ -1,4 +1,4 @@
-package com.market.product.domain;
+package com.market.core.product.domain;
 
 import jakarta.persistence.Embeddable;
 

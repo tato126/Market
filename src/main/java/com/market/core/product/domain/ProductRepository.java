@@ -1,4 +1,4 @@
-package com.market.product.domain;
+package com.market.core.product.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

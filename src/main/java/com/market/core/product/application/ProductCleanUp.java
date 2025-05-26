@@ -1,6 +1,6 @@
-package com.market.product.application;
+package com.market.core.product.application;
 
-import com.market.product.domain.ProductId;
+import com.market.core.product.domain.ProductId;
 
 /**
  * 등록된 제품 정리 유스케이스.

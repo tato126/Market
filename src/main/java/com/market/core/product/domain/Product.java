@@ -1,4 +1,4 @@
-package com.market.product.domain;
+package com.market.core.product.domain;
 
 import jakarta.persistence.*;
 
@@ -20,7 +20,7 @@ public class Product {
     private ProductId id;
 
     // 판매자
-    private String seller;
+    private String sellerName;
 
     // 상품명
     private String productName;
@@ -46,9 +46,9 @@ public class Product {
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
 
-    private Product(ProductId id, String seller, String productName, String description, BigDecimal price, Integer stockQuantity, ProductState state, ProductCategory category, LocalDateTime createdDate) {
+    private Product(ProductId id, String sellerName, String productName, String description, BigDecimal price, Integer stockQuantity, ProductState state, ProductCategory category, LocalDateTime createdDate) {
         this.id = Objects.requireNonNull(id, "ProductId must not be null");
-        this.seller = Objects.requireNonNull(seller, "Seller must not be null");
+        this.sellerName = Objects.requireNonNull(sellerName, "sellerName must not be null");
         this.productName = Objects.requireNonNull(productName, "ProductName must not be null");
         this.description = Objects.requireNonNull(description, "Product Description must not be null");
         this.price = Objects.requireNonNull(price, "Product price must not be null");
@@ -61,7 +61,7 @@ public class Product {
 
     public static Product create(
             ProductIdGenerator idGenerator,
-            String seller,
+            String sellerName,
             String productName,
             String description,
             BigDecimal price,
@@ -71,7 +71,7 @@ public class Product {
 
         return new Product(
                 idGenerator.generateId(),
-                seller,
+                sellerName,
                 productName,
                 description,
                 price,
@@ -83,9 +83,9 @@ public class Product {
     }
 
     // TODO: 차후 ProductUsernameNotMatchedException 과 같은 형식으로 변경해야 한다.
-    private Product verifySeller(String sellerName) {
+    private Product verifysellerName(String sellerNameName) {
 
-        if (!Objects.equals(sellerName, this.seller)) {
+        if (!Objects.equals(sellerNameName, this.sellerName)) {
             throw new IllegalStateException(); // 차후 변경되어야 할 예외처리
         }
 
@@ -102,8 +102,8 @@ public class Product {
         return id;
     }
 
-    public String getSeller() {
-        return seller;
+    public String getsellerName() {
+        return sellerName;
     }
 
     public String getProductName() {
@@ -161,7 +161,7 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", seller='" + seller + '\'' +
+                ", sellerName='" + sellerName + '\'' +
                 ", productName='" + productName + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
