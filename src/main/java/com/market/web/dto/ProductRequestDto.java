@@ -4,22 +4,28 @@ import com.market.core.product.domain.ProductCategory;
 import com.market.core.product.domain.ProductState;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
+/**
+ * 상품(Product) 요청시 사용 DTO 클래스.
+ *
+ * @author chan
+ */
 public class ProductRequestDto {
 
-    private String sellerName;
+    private final String sellerName;
 
-    private String productName;
+    private final String productName;
 
-    private String description;
+    private final String description;
 
-    private BigDecimal price;
+    private final BigDecimal price;
 
-    private Integer stockQuantity;
+    private final Integer stockQuantity;
 
-    private ProductState productState;
+    private final ProductState productState;
 
-    private ProductCategory productCategory;
+    private final ProductCategory productCategory;
 
     public ProductRequestDto(String sellerName, String productName, String description, BigDecimal price, Integer stockQuantity, ProductState productState, ProductCategory productCategory) {
         this.sellerName = sellerName;
@@ -29,10 +35,6 @@ public class ProductRequestDto {
         this.stockQuantity = stockQuantity;
         this.productState = productState;
         this.productCategory = productCategory;
-    }
-
-    // for Hibernate
-    public ProductRequestDto() {
     }
 
     // Getter
@@ -64,32 +66,43 @@ public class ProductRequestDto {
         return productCategory;
     }
 
-    // Setter
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        ProductRequestDto requestDto = (ProductRequestDto) obj;
+
+        return Objects.equals(sellerName, ((ProductRequestDto) obj).sellerName) &&
+                Objects.equals(productName, ((ProductRequestDto) obj).productName) &&
+                Objects.equals(description, ((ProductRequestDto) obj).description) &&
+                Objects.equals(price, ((ProductRequestDto) obj).price) &&
+                Objects.equals(stockQuantity, ((ProductRequestDto) obj).stockQuantity) &&
+                Objects.equals(productState, ((ProductRequestDto) obj).productState) &&
+                Objects.equals(productCategory, ((ProductRequestDto) obj).productCategory);
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    @Override
+    public int hashCode() {
+        return Objects.hash(sellerName, productName, description, price, stockQuantity, productState, productCategory);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public void setProductState(ProductState productState) {
-        this.productState = productState;
-    }
-
-    public void setProductCategory(ProductCategory productCategory) {
-        this.productCategory = productCategory;
+    @Override
+    public String toString() {
+        return "ProductRequestDto{" +
+                "sellerName='" + sellerName + '\'' +
+                ", productName='" + productName + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", productState=" + productState +
+                ", productCategory=" + productCategory +
+                '}';
     }
 }
