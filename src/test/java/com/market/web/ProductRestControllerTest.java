@@ -1,9 +1,13 @@
 package com.market.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.core.product.application.ProductFind;
 import com.market.core.product.application.ProductModification;
 import com.market.core.product.application.ProductRegistry;
-import com.market.core.product.domain.*;
+import com.market.core.product.domain.Product;
+import com.market.core.product.domain.ProductCategory;
+import com.market.core.product.domain.ProductId;
+import com.market.core.product.domain.ProductState;
 import com.market.web.dto.request.ProductRequestDto;
 import com.market.web.dto.request.ProductUpdateDto;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,11 +29,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+// TODO: 매번 다른 테스트마다 Product 객체를 생성해주고 있다. 이를 간편하게 바꿀 수 있는 방법이 있을까?
 @WebMvcTest(ProductRestController.class)
 class ProductRestControllerTest {
 
@@ -36,6 +42,9 @@ class ProductRestControllerTest {
 
     @MockBean
     private ProductModification modification;
+
+    @MockBean
+    private ProductFind productFind;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -113,9 +122,122 @@ class ProductRestControllerTest {
         // then
         ArgumentCaptor<ProductUpdateDto> dtoCaptor = ArgumentCaptor.forClass(ProductUpdateDto.class);
         verify(modification).modify(eq(productId), dtoCaptor.capture());
-
         ProductUpdateDto captorDto = dtoCaptor.getValue();
+
+        assertThat(captorDto).isNotNull();
+
         assertThat(captorDto.productName()).isEqualTo(expectedProductName);
         assertThat(captorDto.stockQuantity()).isEqualTo(100);
+    }
+
+    @DisplayName("상품 전체 조회 요청이 들어오면, 서비스의 ProductFind.all() 메서드를 DTO와 함께 호출한다.")
+    @Test
+    void readAll_ShouldFindAllProduct() throws Exception {
+
+        // given
+        var productId1 = ProductId.of(UUID.randomUUID().toString());
+        var productId2 = ProductId.of(UUID.randomUUID().toString());
+
+        // 첫 번째 Product 객체 생성.
+        Product firstProduct = Product.create(
+                () -> productId1,
+                "판매자 A",
+                "청바지",
+                "멋진 청바지",
+                new BigDecimal(10000),
+                100,
+                ProductState.ON_SALE,
+                ProductCategory.BOTTOM
+        );
+
+        // 두 번째 Product 객체 생성.
+        Product secondProduct = Product.create(
+                () -> productId2,
+                "판매자 B",
+                "스니커즈 운동화",
+                "멋진 스니커즈 운동화",
+                new BigDecimal(10000),
+                100,
+                ProductState.ON_SALE,
+                ProductCategory.SHOES
+        );
+
+        // 리스트에 Product1, Product2 저장.
+        List<Product> mockProductList = Arrays.asList(firstProduct, secondProduct);
+
+        // 테스트 시에 productFind.all() 메서드가 호출되면 mockProductList 객체를 반환.
+        when(productFind.all()).thenReturn(mockProductList);
+
+        // when & then
+        mockMvc.perform(
+                        get("/api/products")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(mockProductList.size()))
+                // 첫 번째 상품의 내용 검증
+                .andExpect(jsonPath("$[0].productId").value(productId1.toString()))
+                .andExpect(jsonPath("$[0].sellerName").value(firstProduct.getsellerName()))
+                .andExpect(jsonPath("$[0].productName").value(firstProduct.getProductName()))
+                .andExpect(jsonPath("$[0].description").value(firstProduct.getDescription()))
+                .andExpect(jsonPath("$[0].price").value(firstProduct.getPrice()))
+                .andExpect(jsonPath("$[0].stockQuantity").value(firstProduct.getStockQuantity()))
+                .andExpect(jsonPath("$[0].productState").value(firstProduct.getState().name()))
+                .andExpect(jsonPath("$[0].productCategory").value(firstProduct.getCategory().name()))
+
+                // 두 번째 상품의 내용 검증
+                .andExpect(jsonPath("$[1].productId").value(productId2.toString()))
+                .andExpect(jsonPath("$[1].sellerName").value(secondProduct.getsellerName()))
+                .andExpect(jsonPath("$[1].productName").value(secondProduct.getProductName()))
+                .andExpect(jsonPath("$[1].description").value(secondProduct.getDescription()))
+                .andExpect(jsonPath("$[1].price").value(secondProduct.getPrice()))
+                .andExpect(jsonPath("$[1].stockQuantity").value(secondProduct.getStockQuantity()))
+                .andExpect(jsonPath("$[1].productState").value(secondProduct.getState().name()))
+                .andExpect(jsonPath("$[1].productCategory").value(secondProduct.getCategory().name()))
+                .andDo(print());
+
+        // then
+        verify(productFind).all();
+
+    }
+
+    @DisplayName("상품을 Id로 조회하는 요청이 들어오면, 서비스의 ProductFind.findById() 메서드를 DTO와 함께 호출한다.")
+    @Test
+    void read_ShouldFindByIdProduct() throws Exception {
+
+        // given
+        String idString = UUID.randomUUID().toString();
+        var productId = ProductId.of(idString);
+        String sellerName = "조회된 판매자";
+        String productName = "조회된 상품명";
+        String description = "조회된 상품 설명";
+
+        Product foundProduct = Product.create(
+                () -> productId,
+                sellerName,
+                productName,
+                description,
+                new BigDecimal(10000),
+                100,
+                ProductState.ON_SALE,
+                ProductCategory.SHOES
+        );
+
+        when(productFind.byId(eq(productId))).thenReturn(foundProduct);
+
+        // when & then
+        mockMvc.perform(
+                        get("/api/products/{id}", idString)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.productId").value(idString))
+                .andExpect(jsonPath("$.productName").value(productName))
+                .andExpect(jsonPath("$.sellerName").value(sellerName))
+                .andExpect(jsonPath("$.description").value(description))
+                .andDo(print());
+
+        // then
+        verify(productFind).byId(eq(productId));
     }
 }
