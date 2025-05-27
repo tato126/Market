@@ -1,6 +1,7 @@
 package com.market.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.market.core.product.application.ProductCleanUp;
 import com.market.core.product.application.ProductFind;
 import com.market.core.product.application.ProductModification;
 import com.market.core.product.application.ProductRegistry;
@@ -46,6 +47,9 @@ class ProductRestControllerTest {
     @MockBean
     private ProductFind productFind;
 
+    @MockBean
+    private ProductCleanUp productCleanUp;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -53,7 +57,7 @@ class ProductRestControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("상품 등록 요청이 오면, 서비스의 register 메서드를 DTO와 함께 호출한다.")
+    @DisplayName("상품 등록 요청 시, 서비스의 register 메서드를 DTO와 함께 호출한다.")
     void create_ShouldRegisterProduct() throws Exception {
 
         // given
@@ -92,7 +96,7 @@ class ProductRestControllerTest {
     }
 
     @Test
-    @DisplayName("상품 수정 요청이 오면, 서비스의 modification 메서드를 DTO와 함께 호출한다.")
+    @DisplayName("특정 ID 상품 수정 요청 시, 서비스의 modification 메서드를 DTO와 함께 호출한다.")
     void update_ShouldModificationProduct() throws Exception {
 
         // given
@@ -130,7 +134,7 @@ class ProductRestControllerTest {
         assertThat(captorDto.stockQuantity()).isEqualTo(100);
     }
 
-    @DisplayName("상품 전체 조회 요청이 들어오면, 서비스의 ProductFind.all() 메서드를 DTO와 함께 호출한다.")
+    @DisplayName("상품 전체 조회 요청 시, 서비스의 ProductFind.all() 메서드를 DTO와 함께 호출한다.")
     @Test
     void readAll_ShouldFindAllProduct() throws Exception {
 
@@ -201,7 +205,7 @@ class ProductRestControllerTest {
 
     }
 
-    @DisplayName("상품을 Id로 조회하는 요청이 들어오면, 서비스의 ProductFind.findById() 메서드를 DTO와 함께 호출한다.")
+    @DisplayName("특정 ID 상품을 조회하는 요청 시, 서비스의 findById() 메서드를 DTO와 함께 호출한다.")
     @Test
     void read_ShouldFindByIdProduct() throws Exception {
 
@@ -239,5 +243,24 @@ class ProductRestControllerTest {
 
         // then
         verify(productFind).byId(eq(productId));
+    }
+
+    // TODO: 삭제 후에 반환값(예: 삭제된 객체 ID)를 리턴해야 할까?
+    @DisplayName("특정 ID 상품 삭제 요청 시, 서비스의 remove() 메서드를 호출해야 하고 204 상태를 반환한다.")
+    @Test
+    void remove_ShouldRemoveByIdProduct() throws Exception {
+
+        // given
+        String stringId = UUID.randomUUID().toString();
+        ProductId productId = ProductId.of(stringId);
+
+        // when & then
+        mockMvc.perform(
+                        delete("/api/products/{id}", stringId))
+                .andExpect(status().isNoContent())
+                .andDo(print());
+
+        // then
+        verify(productCleanUp).clear(eq(productId));
     }
 }

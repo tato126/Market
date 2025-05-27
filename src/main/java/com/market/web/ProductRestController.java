@@ -1,5 +1,6 @@
 package com.market.web;
 
+import com.market.core.product.application.ProductCleanUp;
 import com.market.core.product.application.ProductFind;
 import com.market.core.product.application.ProductModification;
 import com.market.core.product.application.ProductRegistry;
@@ -25,16 +26,18 @@ public class ProductRestController {
     private final ProductRegistry productRegistry;
     private final ProductModification productModification;
     private final ProductFind productFind;
+    private final ProductCleanUp productCleanUp;
 
-    public ProductRestController(ProductRegistry productRegistry, ProductModification productModification, ProductFind productFind) {
+    public ProductRestController(ProductRegistry productRegistry, ProductModification productModification, ProductFind productFind, ProductCleanUp productCleanUp) {
         this.productRegistry = productRegistry;
         this.productModification = productModification;
         this.productFind = productFind;
+        this.productCleanUp = productCleanUp;
     }
 
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> findAll() {
-        log.debug("[ReadAll] Request for all product.");
+        log.debug("[ReadAll] Request for findAll product.");
 
         // 1. 서비스로 부터 저장된 모든 Product 엔티티(Entity) 객체 가져오기.
         List<Product> productList = productFind.all();
@@ -94,6 +97,15 @@ public class ProductRestController {
         ProductId updatedProduct = productModification.modify(id, updateDto);
 
         return ResponseEntity.ok(updatedProduct);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> remove(@PathVariable ProductId id) {
+        log.debug("[Delete] Request for remove ProductId: {}", id);
+
+        productCleanUp.clear(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
