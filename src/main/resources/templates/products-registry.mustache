@@ -1,0 +1,64 @@
+{{>layout/header}}
+
+<h1>Product Registry</h1>
+
+<div class="col-md-12">
+    <div class="col-md-8 offset-md-2">
+        <form action="/api/products" method="post" id="productForm">
+            <div class="form-group">
+                <label for="productName">제목 (상품명):</label>
+                <input type="text" class="form-control" id="productName" name="productName" placeholder="제목을 입력하세요"
+                       required/>
+            </div>
+
+            <div class="form-group">
+                <label for="sellerName">작성자 (판매자 이름):</label>
+                <input type="text" class="form-control" id="sellerName" name="sellerName" placeholder="작성자를 입력하세요"
+                       required/>
+            </div>
+
+            <div class="form-group">
+                <label for="description">내용 (상품 설명):</label>
+                <textarea class="form-control" id="description" name="description" rows="3" placeholder="내용을 입력하세요"
+                          required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="price">가격:</label>
+                <input type="number" class="form-control" id="price" name="price" step="0.01" required min="0"/>
+            </div>
+
+            <div class="form-group">
+                <label for="stockQuantity">재고 수량:</label>
+                <input type="number" class="form-control" id="stockQuantity" name="stockQuantity" required min="0"/>
+            </div>
+
+            <div class="form-group">
+                <label for="productState">상품 상태:</label>
+                <select class="form-control" id="productState" name="productState">
+                    <option value="PREPARING" selected>판매 준비중</option>
+                    <option value="ON_SALE">판매중</option>
+                    <option value="SOLD_OUT">품절</option>
+                    <option value="DISCONTINUED">판매 중지</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">상품 카테고리:</label>
+                <select class="form-control" id="productCategory" name="productCategory">
+                    <option value="TOP">상의</option>
+                    <option value="BOTTOM">하의</option>
+                    <option value="SHOES" selected>신발</option>
+                </select>
+            </div>
+
+            <div>
+                <a href="/" role="button" class="btn btn-secondary">취소</a>
+                <button type="submit" class="btn btn-primary" id="btn-save">등록</button>
+            </div>
+        </form>
+        <div id="formResult" class="mt-3"></div>
+    </div>
+</div>
+
+{{>layout/footer}}
