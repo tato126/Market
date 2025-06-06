@@ -8,6 +8,10 @@ var productFormHandler = {
             event.preventDefault();
             _this.save();
         });
+
+        $('#btn-update').on('click', function (event) {
+            _this.update();
+        });
     },
     save : function () {
         var data = {
@@ -84,7 +88,47 @@ var productFormHandler = {
             alert(errorMessage);
             $('#formResult').text(errorMessage).removeClass('success').addClass('error');
         });
-    }
+    },
+
+    setDefaultSelection: function () {
+            // 숨겨둔 input에서 현재 상품의 상태와 카테고리 값을 가져옴
+            var currentState = $('#currentProductState').val();
+            var currentCategory = $('#currentProductCategory').val();
+
+            // 드롭다운의 값을 현재 상품의 값으로 설정
+            if (currentState) {
+                $('#productState').val(currentState);
+            }
+            if (currentCategory) {
+                $('#productCategory').val(currentCategory);
+            }
+        },
+
+     update : function () {
+             var data = {
+                 productName: $('#productName').val(),
+                 description: $('#description').val(),
+                 price: $('#price').val(),
+                 stockQuantity: $('#stockQuantity').val(),
+                 productState: $('#productState').val(),
+                 productCategory: $('#productCategory').val()
+             };
+
+             var id = $('#id').val();
+
+             $.ajax({
+                 type: 'PUT',
+                 url: '/api/products/' + id,
+                 dataType: 'json',
+                 contentType:'application/json; charset=utf-8',
+                 data: JSON.stringify(data)
+             }).done(function() {
+                 alert('상품 정보가 수정되었습니다.');
+                 window.location.href = '/products';
+             }).fail(function (error) {
+                 alert(JSON.stringify(error));
+             });
+         }
 };
 
 // 페이지 로드 완료 시 init 함수 실행
