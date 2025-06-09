@@ -2,6 +2,10 @@
 var productFormHandler = {
     init : function () {
         var _this = this;
+
+        // 페이지 로드 시 드롭다운 기본값 설정
+        _this.setDefaultSelection();
+
         // '#btn-save' 버튼 클릭 시 save 함수 호출
         $('#btn-save').on('click', function (event) {
             // 기본 폼 제출 방지 (AJAX를 사용하므로)
@@ -12,6 +16,11 @@ var productFormHandler = {
         $('#btn-update').on('click', function (event) {
             _this.update();
         });
+
+        $('#btn-delete').on('click', function () {
+            _this.delete();
+        });
+
     },
     save : function () {
         var data = {
@@ -128,8 +137,30 @@ var productFormHandler = {
              }).fail(function (error) {
                  alert(JSON.stringify(error));
              });
-         }
-};
+         },
+
+     delete : function () {
+        var id = $('#id').val();
+
+        if (!confirm(id + '번 상품을 정말 삭제하시겠습니까?')) {
+            return;
+        }
+
+        $.ajax({
+            type: 'DELETE',
+            url: '/api/products/' + id,
+            dataType: 'json',
+            contentType:'application/json; charset=utf-8'
+        }).done(function() {
+            alert('글이 삭제되었습니다.');
+            window.location.href= '/products';
+        }).fail(function (error) {
+            alert(JSON.stringify(error));
+        });
+    }
+ };
+
+
 
 // 페이지 로드 완료 시 init 함수 실행
 $(document).ready(function() {
